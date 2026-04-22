@@ -1,19 +1,14 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import * as path from 'path';
 import * as H5P from '@lumieducation/h5p-server';
-import { ContentRecord } from './content-record.entity';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class H5PService implements OnModuleInit {
   private editor!: H5P.H5PEditor;
   private player!: H5P.H5PPlayer;
 
-  constructor(
-    @InjectRepository(ContentRecord)
-    private readonly contentRepo: Repository<ContentRecord>,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async onModuleInit() {
     const dataDir = path.resolve(process.env.H5P_DATA_DIR || './h5p-data');
@@ -54,15 +49,19 @@ export class H5PService implements OnModuleInit {
   }
 
   async listContent() {
-    return this.contentRepo.find({ order: { updatedAt: 'DESC' } });
+    return this.prisma.contentRecord.findMany({ orderBy: { updatedAt: 'desc' } });
   }
 
   async saveContentRecord(id: string, title: string, mainLibrary: string) {
-    await this.contentRepo.save({ id, title, mainLibrary });
+    await this.prisma.contentRecord.upsert({
+      where: { id },
+      create: { id, title, mainLibrary },
+      update: { title, mainLibrary },
+    });
   }
 
   async getContentRecord(id: string) {
-    return this.contentRepo.findOne({ where: { id } });
+    return this.prisma.contentRecord.findUnique({ where: { id } });
   }
 
   currentUser(): H5P.IUser {
