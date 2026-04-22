@@ -1,0 +1,6 @@
+node_modules
+dist
+.env
+h5p-data/content
+h5p-data/libraries
+h5p-data/temp
