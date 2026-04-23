@@ -8,7 +8,8 @@
     "build": "tsc -p tsconfig.build.json",
     "start:prod": "node dist/main.js",
     "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate dev"
+    "prisma:migrate": "prisma migrate dev",
+    "h5p:fetch": "bash scripts/download-h5p-core.sh"
   },
   "dependencies": {
     "@lumieducation/h5p-express": "^9.3.3",
