@@ -20,6 +20,7 @@ async function bootstrap() {
   const h5p = app.get(H5PService);
   await h5p.init();
   app.use('/h5p', (req: Request, _res: Response, next: NextFunction) => {
+    console.log('[h5p]', req.method, req.originalUrl);
     (req as any).user = h5p.currentUser();
     (req as any).language = (req.query.language as string) || 'en';
     (req as any).t = (key: string) => key;

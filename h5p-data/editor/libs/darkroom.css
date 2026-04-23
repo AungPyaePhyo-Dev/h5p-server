@@ -1,0 +1,4 @@
+/* Stub: @lumieducation/h5p-server 9.x still lists libs/darkroom.css in
+   editorAssetList.json, but upstream H5P dropped darkroom in favor of
+   cropper.js. An empty file keeps the editor from 404-ing on load.
+   Remove once h5p-server is upgraded to >= 10. */

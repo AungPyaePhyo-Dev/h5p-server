@@ -36,4 +36,15 @@ mkdir -p "$DATA_DIR"
 fetch "core"   "$CORE_VERSION"   "h5p-php-library"        "$CORE_DIR"
 fetch "editor" "$EDITOR_VERSION" "h5p-editor-php-library" "$EDITOR_DIR"
 
+# @lumieducation/h5p-server 9.x still lists libs/darkroom.css in its
+# editorAssetList.json, but upstream H5P replaced darkroom with cropper.js
+# and no longer ships the file. Drop an empty stub so the editor stops
+# 404-ing. Remove once h5p-server is upgraded to >= 10.
+DARKROOM_STUB="$EDITOR_DIR/libs/darkroom.css"
+if [ ! -f "$DARKROOM_STUB" ]; then
+  mkdir -p "$(dirname "$DARKROOM_STUB")"
+  : > "$DARKROOM_STUB"
+  echo "[editor] wrote darkroom.css stub"
+fi
+
 echo "Done. Core → $CORE_DIR, editor → $EDITOR_DIR"
