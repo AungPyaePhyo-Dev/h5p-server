@@ -15,3 +15,33 @@ model ContentRecord {
 
   @@map("h5p_content")
 }
+
+model ScormQuiz {
+  id               String   @id
+  title            String
+  description      String   @default("")
+  passThreshold    Int      @default(70)
+  // Questions as JSON:
+  // [{ id, prompt, choices: [{ id, text }], correctChoiceId }]
+  questions        Json
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@map("scorm_quiz")
+}
+
+model ScormLesson {
+  id            String   @id
+  title         String
+  description   String   @default("")
+  // Ordered list of blocks; discriminated by `type`:
+  //   { id, type: 'text',  title, body }
+  //   { id, type: 'image', caption, src: { kind: 'upload', filename } }
+  //   { id, type: 'video', src: { kind: 'upload', filename } | { kind: 'url', url } }
+  //   { id, type: 'quiz',  passThreshold, questions: [...] }
+  blocks        Json
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("scorm_lesson")
+}
