@@ -3,6 +3,8 @@ import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { h5pAjaxExpressRouter } from '@lumieducation/h5p-express';
 import type { Request, Response, NextFunction } from 'express';
+import express from 'express';
+import fileUpload from 'express-fileupload';
 import { AppModule } from './app.module';
 import { H5PService } from './h5p/h5p.service';
 
@@ -26,6 +28,18 @@ async function bootstrap() {
     (req as any).t = (key: string) => key;
     next();
   });
+  // The H5P ajax endpoint expects `req.files.file` / `req.files.h5p` from
+  // express-fileupload (not multer), and form-encoded POST bodies for actions
+  // like `files` and `translations`. Register these before the ajax router.
+  app.use('/h5p', express.json({ limit: '1gb' }));
+  app.use('/h5p', express.urlencoded({ extended: true, limit: '1gb' }));
+  app.use(
+    '/h5p',
+    fileUpload({
+      limits: { fileSize: 1024 * 1024 * 1024 },
+      useTempFiles: false,
+    }),
+  );
   app.use(
     '/h5p',
     h5pAjaxExpressRouter(h5p.getEditor(), h5p.getCorePath(), h5p.getEditorLibraryPath()),
